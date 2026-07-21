@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Sidebar from '../components/Sidebar'
 import RailwayMap from '../components/RailwayMap'
@@ -10,8 +10,9 @@ import AiRecommendationPanel from '../components/AiRecommendationPanel'
 import NetworkHealthPanel from '../components/NetworkHealthPanel'
 import WeatherPanel from '../components/WeatherPanel'
 import JunctionMonitorPanel from '../components/JunctionMonitorPanel'
+import { train as trainData } from '../data'
 
-const trains = [
+const defaultTrains = [
   { name: 'Rajdhani Express', speed: 90, track: 'A', platform: 2, signal: 'Green', status: 'On time', eta: '05:10' },
   { name: 'Shatabdi Express', speed: 88, track: 'B', platform: 4, signal: 'Yellow', status: 'Moderate', eta: '05:42' },
   { name: 'Vande Bharat', speed: 96, track: 'C', platform: 6, signal: 'Green', status: 'On time', eta: '06:05' },
@@ -50,6 +51,9 @@ const Dashboard = () => {
     platform: 2,
     eta: '05:10',
   })
+  const [dashboardTrain, setDashboardTrain] = useState(trainData)
+  const [serverStatus, setServerStatus] = useState('local file')
+  const [liveTrains, setLiveTrains] = useState(defaultTrains)
   const [signalStates, setSignalStates] = useState(initialSignals)
   const [selectedSignal, setSelectedSignal] = useState('S101')
   const [notifications, setNotifications] = useState(initialNotifications)
@@ -59,6 +63,33 @@ const Dashboard = () => {
   const [activeCCTV, setActiveCCTV] = useState('Platform 2')
   const [announcementText, setAnnouncementText] = useState('Attention please, Train 12301 Rajdhani Express is arriving at Platform 2.')
 
+  useEffect(() => {
+    const fetchTrain = () => {
+      fetch('http://localhost:5000/train')
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`)
+          }
+          return res.json()
+        })
+        .then((data) => {
+          if (data && data.name) {
+            setDashboardTrain(data)
+            setServerStatus('fake node server')
+          }
+        })
+        .catch((err) => {
+          console.warn('Train server fetch failed', err)
+          setServerStatus('local file')
+          addNotification('Train server unavailable, using local file data')
+        })
+    }
+
+    fetchTrain()
+    const interval = setInterval(fetchTrain, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
   const addNotification = (message) => {
     setNotifications((prev) => [message, ...prev].slice(0, 6))
   }
@@ -67,7 +98,23 @@ const Dashboard = () => {
     event.preventDefault()
     const normalized = searchQuery.trim().toLowerCase()
 
-    if (normalized === '12301' || normalized.includes('rajdhani')) {
+    const matchedTrain = liveTrains.find((train) =>
+      train.name.toLowerCase().includes(normalized) ||
+      `${train.platform}` === normalized ||
+      train.track.toLowerCase() === normalized ||
+      train.eta.toLowerCase().includes(normalized),
+    )
+
+    if (matchedTrain) {
+      setSearchResult({
+        code: matchedTrain.code || 'N/A',
+        name: matchedTrain.name,
+        station: matchedTrain.station || matchedTrain.track || 'Unknown',
+        speed: matchedTrain.speed,
+        platform: matchedTrain.platform,
+        eta: matchedTrain.eta,
+      })
+    } else if (normalized === '12301' || normalized.includes('rajdhani')) {
       setSearchResult({
         code: '12301',
         name: 'Rajdhani Express',
@@ -148,7 +195,7 @@ const Dashboard = () => {
         <section className="grid grid-cols-4 gap-4 auto-rows-min kpi-grid">
           <article className="panel kpi-card">
             <p className="eyebrow">Running trains</p>
-            <h2>12</h2>
+            <h2>{liveTrains.length}</h2>
           </article>
           <article className="panel kpi-card">
             <p className="eyebrow">Active signals</p>
@@ -176,8 +223,15 @@ const Dashboard = () => {
                 <h3>Active movement</h3>
               </div>
             </div>
+            <div className="train-summary">
+              <div><strong>Source:</strong> {serverStatus}</div>
+              <div><strong>Train:</strong> {dashboardTrain.name}</div>
+              <div><strong>Speed:</strong> {dashboardTrain.speed} km/h</div>
+              <div><strong>Station:</strong> {dashboardTrain.station}</div>
+              <div><strong>Signal:</strong> {dashboardTrain.signal}</div>
+            </div>
             <div className="train-list">
-              {trains.map((train) => (
+              {liveTrains.map((train) => (
                 <TrainCard key={train.name} train={train} />
               ))}
             </div>
