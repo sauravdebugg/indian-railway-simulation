@@ -13,7 +13,13 @@ import { useState } from 'react'
 const Sidebar = () => {
   const [query, setQuery] = useState('')
   const [selectedTrain, setSelectedTrain] = useState('Rajdhani Express')
+  const [activeItem, setActiveItem] = useState('Dashboard')
   const trains = ['Rajdhani Express', 'Shatabdi Express', 'Vande Bharat', 'Garib Rath']
+
+  const handleTrainSelect = (train) => {
+    setSelectedTrain(train)
+    setQuery(train)
+  }
 
   return (
     <aside className="sidebar">
@@ -27,7 +33,12 @@ const Sidebar = () => {
 
       <nav className="nav-links">
         {items.map(({ label, emoji }) => (
-          <button key={label} className={`nav-link ${label === 'Dashboard' ? 'active' : ''}`}>
+          <button
+            key={label}
+            type="button"
+            className={`nav-link ${activeItem === label ? 'active' : ''}`}
+            onClick={() => setActiveItem(label)}
+          >
             <span>{emoji}</span>
             <span>{label}</span>
           </button>
@@ -42,6 +53,22 @@ const Sidebar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <div style={{ marginTop: 8 }}>
+          <p className="eyebrow">Quick Picks</p>
+          <div className="nav-links" style={{ gap: 6, marginTop: 6 }}>
+            {trains.map((train) => (
+              <button
+                key={train}
+                type="button"
+                className={`nav-link ${selectedTrain === train ? 'active' : ''}`}
+                onClick={() => handleTrainSelect(train)}
+              >
+                <span>🚆</span>
+                <span>{train}</span>
+              </button>
+            ))}
+          </div>
+        </div>
         <div style={{ marginTop: 8 }}>
           <p className="eyebrow">Current Position:</p>
           <div className="route-node">{selectedTrain ? 'Prayagraj' : '—'}</div>

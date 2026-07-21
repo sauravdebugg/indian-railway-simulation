@@ -232,27 +232,57 @@ p {
 
 .dashboard-grid {
   display: grid;
-  /* responsive columns: 1 → 2 → 3 → 4 */
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
   align-items: start;
-  /* let rows size to their content to avoid empty gaps */
-  grid-auto-rows: min-content;
   grid-auto-flow: dense;
 }
 
-.railway-map-span {
-  grid-column: span 1;
-  grid-row: span 1;
-  display: flex;
-  flex-direction: column;
+.railway-map,
+.live-trains,
+.signals,
+.collision,
+.logs,
+.analytics,
+.search-panel,
+.emergency-panel,
+.cctv-panel,
+.delay-panel,
+.passengers-panel,
+.route-panel,
+.notifications-panel,
+.metrics-panel,
+.timeline-panel,
+.signal-panel,
+.heat-panel,
+.summary-panel,
+.voice-panel {
+  grid-column: span 3;
 }
 
-.train-panel-span {
-  grid-column: span 1;
-  grid-row: span 1;
-  display: flex;
-  flex-direction: column;
+.railway-map-panel,
+.live-trains,
+.search-panel,
+.emergency-panel,
+.notifications-panel,
+.summary-panel,
+.voice-panel {
+  grid-column: span 6;
+}
+
+.ai-panel,
+.health-panel,
+.junction-panel,
+.weather-panel {
+  grid-column: span 4;
+}
+
+.railway-map-panel {
+  min-height: 700px;
+}
+
+.railway-map-panel > div {
+  height: 100%;
 }
 
 .signal-panel-span {
@@ -267,51 +297,53 @@ p {
   }
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 1023px) {
   .dashboard-grid {
-    /* use a 3-column layout so the map can take 2 columns */
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
-  .railway-map-span {
-    grid-column: span 2;
-    grid-row: span 1;
-  }
-  .train-panel-span {
+
+  .railway-map,
+  .live-trains,
+  .signals,
+  .collision,
+  .logs,
+  .analytics,
+  .ai,
+  .weather,
+  .health,
+  .junction,
+  .search-panel,
+  .emergency-panel,
+  .cctv-panel,
+  .delay-panel,
+  .passengers-panel,
+  .route-panel,
+  .notifications-panel,
+  .metrics-panel,
+  .ai-panel,
+  .timeline-panel,
+  .signal-panel,
+  .heat-panel,
+  .weather-panel,
+  .summary-panel,
+  .voice-panel {
     grid-column: span 1;
   }
 }
 
-/* Prevent overlap on medium screens by forcing train panel full-width below map */
-@media (max-width: 1279px) {
-  .train-panel-span {
-    grid-column: 1 / -1;
+@media (min-width: 1024px) {
+  .signals,
+  .collision,
+  .logs,
+  .analytics {
+    grid-column: span 3;
   }
-}
 
-@media (min-width: 1280px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .railway-map-span,
-  .train-panel-span {
-    grid-column: span 2;
-  }
-  .railway-map-span {
-    grid-row: span 2;
-  }
-  /* On extra-large screens place the map in cols 1-2 and trains in col 3 */
-  .railway-map-span {
-    grid-column: 1 / span 2;
-  }
-  .train-panel-span {
-    grid-column: 3 / span 1;
-    grid-row: 1;
-  }
-}
-
-@media (min-width: 1280px) {
-  .today-summary {
-    grid-column: 4 / 5;
+  .ai,
+  .weather,
+  .health,
+  .junction {
+    grid-column: span 3;
   }
 }
 
@@ -332,25 +364,25 @@ p {
 }
 
 .panel {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #1e293b 0%, #111827 100%);
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.22);
-  /* allow panels to grow with content and avoid clipping; use internal scroll only when needed */
-  overflow: visible;
-  max-height: none;
-  align-self: start;
-}
-
-.panel {
-  padding: 12px 14px;
+  padding: 14px;
   border-radius: 14px;
   background: linear-gradient(135deg, #1e293b 0%, #111827 100%);
   border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: 0 8px 24px rgba(2, 6, 23, 0.22);
   overflow: hidden;
   align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 160px;
+  height: 100%;
+}
+
+.ai-panel,
+.health-panel,
+.junction-panel,
+.weather-panel {
+  min-height: 220px;
 }
 
 .kpi-card h2 {
@@ -368,15 +400,16 @@ p {
 
 .train-list {
   display: grid;
-  gap: 10px;
-  height: auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  height: 100%;
 }
 
 .train-card,
 .compact-panel,
 .alert-panel,
 .analytics-panel {
-  min-height: auto;
+  min-height: 180px;
 }
 
 .train-stats {
@@ -718,6 +751,256 @@ p {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
+}
+
+.search-form,
+.assistant-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.search-form .search-input,
+.assistant-form .search-input {
+  flex: 1;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  color: white;
+  cursor: pointer;
+}
+
+.action-btn.danger {
+  background: linear-gradient(135deg, #f87171, #dc2626);
+}
+
+.action-btn.wide {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.search-result,
+.prediction-card,
+.stat-block,
+.route-list,
+.notification-list,
+.assistant-log,
+.timeline-list,
+.weather-list,
+.signal-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-line,
+.route-item,
+.timeline-item,
+.weather-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.66);
+}
+
+.status-pill {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.16);
+  color: #bbf7d0;
+  font-size: 0.8rem;
+}
+
+.control-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.control-grid.compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cctv-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.chip {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.8);
+  color: #cbd5e1;
+  padding: 6px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #f8fafc;
+}
+
+.cctv-feed {
+  border-radius: 12px;
+  min-height: 110px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cctv-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.camera-badge {
+  font-size: 1.2rem;
+}
+
+.cctv-text {
+  color: #f8fafc;
+  font-size: 0.92rem;
+}
+
+.cctv-text.muted {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.cctv-overlay {
+  align-self: flex-start;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.16);
+  color: #bae6fd;
+  font-size: 0.8rem;
+}
+
+.cctv-placeholder {
+  color: #94a3b8;
+  text-align: center;
+  padding: 18px 0;
+}
+
+.prediction-card {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.prediction-card ul {
+  margin: 6px 0 0 16px;
+  color: #cbd5e1;
+}
+
+.prediction-value {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.big-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.compact-stat {
+  gap: 6px;
+}
+
+.compact-card {
+  min-height: 180px;
+}
+
+.tiny-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #cbd5e1;
+}
+
+.notification-list {
+  padding-left: 18px;
+  color: #cbd5e1;
+}
+
+.metric-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.assistant-message {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #cbd5e1;
+}
+
+.signal-current {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.signal-details {
+  display: grid;
+  gap: 4px;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.heat-map {
+  display: grid;
+  gap: 8px;
+}
+
+.heat-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #f8fafc;
+}
+
+.heat-card.safe {
+  background: rgba(34, 197, 94, 0.16);
+}
+
+.heat-card.medium {
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.heat-card.critical {
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.summary-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.announcement-text {
+  color: #cbd5e1;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 1100px) {

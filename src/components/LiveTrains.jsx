@@ -11,6 +11,7 @@ export default function LiveTrains() {
 
         API.get("/api/trains")
             .then((res) => {
+                console.log(trains);
                 setTrains(res.data);
             })
             .catch((err) => {
